@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview page</title>
+    <style>
+        #questions{
+            border: 10px solid black;
+            display: flex;
+            justify-content: space-evenly;
+            padding: 10px;
+        }
+
+        #questions #solved{
+            border: 1px solid red;
+            padding:15px;
+            text-align: center;
+        }
+
+        #questions #solved h3{
+            font-size: 1.5rem;
+        }
+
+        #questions #submitted{
+            border: 1px solid red;
+            padding:15px;
+            text-align: center;
+        }
+
+        #questions #submitted h3{
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="questions">
+        <div id="solved">
+            <h3>Total Questions solved: <%= fetchData.totalSolved %>/<%=fetchData.totalQuestions%></h3>
+            <pre>Easy Questions Solved: <%=fetchData.easySolved%>/<%=fetchData.totalEasy%></pre>
+            <pre>Medium Questions Solved: <%=fetchData.mediumSolved%>/<%=fetchData.totalMedium%></pre>
+            <pre>Hard Questions Solved: <%=fetchData.hardSolved%>/<%=fetchData.totalHard%></pre>
+        </div>
+        <div id="submitted">
+            <h3>Total Submitted questions:  <%=totalQuestionsSubmitted%></h3>
+            <pre>Easy Questions Submitted: <%= easyQuestionsSubmitted %></pre>
+            <pre>Medium Questions Submitted: <%= medQuestionsSubmitted %></pre>
+            <pre>Hard Questions Submitted: <%= hardQuestionsSubmitted %></pre>
+        </div>
+    </div>
+
+</body>
+</html>
