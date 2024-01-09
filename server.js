@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const res = require('express/lib/response');
+const User = require('./model/userData')
 const axios = require('axios');
 const databaseUri = 'mongodb://127.0.0.1:27017/LetsCode';
 
@@ -40,16 +41,67 @@ const isAuthenticated = (req,res,next)=>{
     }
 }
 
-application.get('/login', (req, res)=>{
+application.get("/login",(req,res)=>{
     console.log("Login page called");
-        res.render('login');
+    res.render('login');
 })
 
 application.get("/register",(req,res)=>{
+    console.log("Register page called");
     res.render('register',{"error":""});
 })
 
-application.get('/userData', async(req, res) => {
+
+application.post('/register',async (req,res)=>{
+    console.log(req.body);
+    const {username,password,conpassword} = req.body;
+    try{
+        if(!username || !password || !conpassword){
+            res.status(401).render('register',{'error':"Enter username and password(or Confirm Password)"})
+            return;
+        }
+        const existingUser = await User.findOne({username});
+        if(existingUser){
+            res.status(400).render('register',{"error":"Username already exists"})
+            return;
+        }
+        const hashedPassword = bcrypt.hashSync(password,10);
+        const newUser = new User({
+            username,
+            password:hashedPassword
+        })
+
+        if(password !== conpassword){
+            res.status(401).render('register',{'error':"Password and confirm password doesn't matches"});
+            console.log("Called not matching");
+            return;
+        }
+        
+        await newUser.save();
+        res.status(201).redirect('/login');
+    }catch(error){
+        console.log(error);
+        res.status(500).render('register',{'error':"Internal server error"})
+    }
+})
+
+application.post('/login',async (req,res)=>{
+    const {username,password} = req.body;
+    try{
+        const user = await User.findOne({username});
+        if(user && bcrypt.compareSync(password,user.password)){
+            res.cookie('auth',true);
+            res.status(201).redirect('/userData');
+        }else{
+            res.status(500).render('login',{'error':"Incorrect username/password"})
+        }
+    }catch(error){
+        console.log(error);
+        res.status(500).render('login',{'error':"Internal server error"})
+    }
+})
+
+application.use('/userData', async(req, res) => {
     console.log("/called");
 
     try{
@@ -85,5 +137,5 @@ application.get('/userData', async(req, res) => {
 })
 
 application.listen(port, ()=>{
-    console.log("Hello from the server");
+    console.log("Server Started");
 })
