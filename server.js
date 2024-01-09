@@ -51,6 +51,9 @@ application.get("/register",(req,res)=>{
     res.render('register',{"error":""});
 })
 
+application.get('/home', (req, res)=>{
+    res.render('home')
+})
 
 application.post('/register',async (req,res)=>{
     console.log(req.body);
@@ -101,7 +104,7 @@ application.post('/login',async (req,res)=>{
     }
 })
 
-application.use('/userData', async(req, res) => {
+application.get('/userData', async(req, res) => {
     console.log("/called");
 
     try{

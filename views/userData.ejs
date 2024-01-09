@@ -31,9 +31,44 @@
         #questions #submitted h3{
             font-size: 1.5rem;
         }
+
+        #nav-bar{
+            border:1px solid red;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #nav-bar #links{
+            display: flex;
+            padding: 10px;
+            width: 50%;
+            /* border: 1px solid black; */
+            justify-content: space-between;
+        }
+
+        #nav-bar #links a{
+            text-decoration: none;
+            color: black;
+        }
+
+        #nav-bar #links a:hover{
+            color: cadetblue;
+        }
     </style>
 </head>
 <body>
+    <div id="nav-bar">
+        <div id="logo">
+        <h1>LetsCode</h1>
+    </div>
+    <div id="links">
+        <a href="/home">HOME</a>
+        <a href="#">PROBLEMS</a>
+        <a href="#">STATS</a>
+        <a href="#">LOGOUT</a>
+    </div>
+    </div>
     <div id="questions">
         <div id="solved">
             <h3>Total Questions solved: <%= fetchData.totalSolved %>/<%=fetchData.totalQuestions%></h3>
