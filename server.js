@@ -6,7 +6,8 @@ const res = require('express/lib/response');
 const User = require('./model/userData')
 const axios = require('axios');
 const databaseUri = 'mongodb://127.0.0.1:27017/LetsCode';
-
+const leetcode = require('leetcode-query');
+const admin = require('./model/adminData');
 
 async function db(){
     await mongoose.connect(databaseUri);
@@ -25,6 +26,7 @@ application.use(express.urlencoded({extended:true}));
 
 application.use((req,res,next)=>{
     const {auth} = req.cookies;
+
     if(auth){
        req.isAuthenticated = true;
     }else{
@@ -53,6 +55,10 @@ application.get("/register",(req,res)=>{
 
 application.get('/home', (req, res)=>{
     res.render('home')
+})
+
+application.get('/admin', (req, res)=>{
+    res.render('admin')
 })
 
 application.post('/register',async (req,res)=>{
@@ -104,11 +110,35 @@ application.post('/login',async (req,res)=>{
     }
 })
 
+application.post('/admin', async(req, res)=>{
+    const { username, password, Eid} = req.body;
+    try{
+        const adminInfo = await admin.findOne({username});
+        if(adminInfo && bcrypt.compareSync(password, adminInfo.password) && adminInfo.Eid){
+            res.cookie('auth', true);
+            console.log("Hi");
+            res.status(500).redirect('/adminPanel')
+            
+        }
+        else{
+            res.status(500).render('admin',{'error':"Admin info not matching"})
+        }
+    }catch(error){
+        res.status(500).render('admin',{'error':"Internal server error"})
+    }
+})
+
+// console.log(uname);
+// const ques = new leetcode(question.questionId);
+// console.log(ques);
+
 application.get('/userData', async(req, res) => {
     console.log("/called");
-
+    console.log(leetcode.activeDailr);
     try{
-        const response = await axios.get(`https://leetcode-api-faisalshohag.vercel.app/Sameer_Vohra`);
+        const { username } = req.query;
+        console.log(username);
+        const response = await axios.get(`https://leetcode-api-faisalshohag.vercel.app/${username}`);
         const fetchData = response.data;
 
         const totalQuestionsSubmitted = fetchData.totalSubmissions
@@ -134,7 +164,7 @@ application.get('/userData', async(req, res) => {
         res.render('userData', { fetchData,totalQuestionsSubmitted, easyQuestionsSubmitted, medQuestionsSubmitted, hardQuestionsSubmitted });
     }catch(error){
         console.log("Error fetching the API", error.message);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(404).render('home');
     }
 
 })

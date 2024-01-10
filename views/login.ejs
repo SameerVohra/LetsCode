@@ -8,7 +8,7 @@
 <style>
     body{
         background-color: black;
-        color: black;
+        color: white;
         margin: 0;
     }
 
@@ -19,37 +19,49 @@
         padding: 6%;
     }
 
+    #error{
+        text-align: center;
+    }
+
     #form{
         border: 1px solid black;
-        background-color: rgb(216, 195, 167);
+        background-color: rgb(67, 88, 84);
         border-radius: 20px;
         display: flex;
-        flex-wrap: wrap;
         justify-content: center;
         align-items: center;
-        width: 60%;
-        height: auto
+        align-content: center;
+        width: 50%;
     }
 
     #form h1{
         text-align: center;
         margin-bottom: 20%;
-
     }
     #form label{
         font-size: 15px;
+
+    }
+    #form #inputField{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
     }
     #form input{
         padding: 5px;
         border: 2px solid black;
+        text-align: center;
         border-radius: 10px;
-        width: auto;
+        width: 80%;
         background-color: transparent;
         color: white;
     }
-    #form button{
+    #form #button{
         margin-top: 10%;
         align-items: center;
+        width: 100%;
     }
     #form #button button{
         padding: 10px;
@@ -65,13 +77,16 @@
         background-color: orange;
         box-shadow: 2px 5px 7px black;
     }
+    #container #reg{
+        text-align: center;
+    }
     #container #reg a{
         text-decoration: none;
-        color: rgb(100, 124, 185);
+        color: rgb(128, 118, 108);
         transition: 200ms ease-in-out;
     }
     #container #reg a:hover{
-        color: rgb(8, 83, 120);
+        color: orange;
     }
 </style>
 <body>
@@ -79,15 +94,19 @@
         <div id="form">
     <form action="/login" method="post">
         <h1>User Login</h1>
+        <div id="inputField">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required autofocus placeholder="Username"><br><br>
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required placeholder="Password"><br>
+        <input type="password" id="password" name="password" required placeholder="Password"><br><br>
+        </div>
         <div id="button">
-        <button type="submit">Login</button>
-    </div>
+        <button type="submit">Register</button>
+    </div>    
     <div id="reg">
-    <p>Don't have an account? <a href="/register">Register here</a></p>
+    <p>New User? <a href="/register">Register here</a></p>
+    <p style="font-size: smaller;"><a href="/admin">Login as admin</a></p>
+
 </div>
 <div id="error">
     <% if(((typeof error)!=="undefined") && error){ %>
@@ -95,6 +114,7 @@
     <% } %>   
     </div>
     </form>
+
 </div>
 </div>
 </body>
