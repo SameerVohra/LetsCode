@@ -6,8 +6,8 @@ const res = require('express/lib/response');
 const User = require('./model/userData')
 const axios = require('axios');
 const databaseUri = 'mongodb://127.0.0.1:27017/LetsCode';
-const leetcode = require('leetcode-query');
 const admin = require('./model/adminData');
+const quesData = require('./model/questions')
 
 async function db(){
     await mongoose.connect(databaseUri);
@@ -58,7 +58,17 @@ application.get('/home', (req, res)=>{
 })
 
 application.get('/admin', (req, res)=>{
+    console.log('/admin called');
     res.render('admin')
+})
+
+application.get('/adminPanel', (req, res)=>{
+    console.log('/adminPanel called');
+    res.render('adminPanel')
+})
+
+application.get('/submissionsDone', (req, res)=>{
+    res.render('submissionsDone');
 })
 
 application.post('/register',async (req,res)=>{
@@ -111,26 +121,53 @@ application.post('/login',async (req,res)=>{
 })
 
 application.post('/admin', async(req, res)=>{
-    const { username, password, Eid} = req.body;
+    const { username, password, Eid } = req.body;
+    console.log(req.body);
     try{
-        const adminInfo = await admin.findOne({username});
-        if(adminInfo && bcrypt.compareSync(password, adminInfo.password) && adminInfo.Eid){
-            res.cookie('auth', true);
-            console.log("Hi");
-            res.status(500).redirect('/adminPanel')
-            
+        const adminData = await admin.findOne({ username });
+        console.log(username);
+        console.log(adminData.password+" "+password);
+        console.log(adminData.id +" "+ Eid);
+        if(username && ((password===adminData.password) && (Eid==adminData.id))){
+            // res.cookie('auth', true);
+            res.status(201).redirect('/adminPanel');
         }
         else{
-            res.status(500).render('admin',{'error':"Admin info not matching"})
+            res.status(401).render('admin',{'error':"Incorrect information"})
         }
     }catch(error){
+        console.log(error);
         res.status(500).render('admin',{'error':"Internal server error"})
     }
 })
 
-// console.log(uname);
-// const ques = new leetcode(question.questionId);
-// console.log(ques);
+application.post('/adminPanel', async(req, res)=>{
+    console.log(req.body);
+    const { question, difficulty, description } = req.body;
+    try{
+        if(!question || !difficulty || !description){
+            res.status(401).render('adminPanel',{'error':"All fields are mandatory"})
+            return;
+        }
+        const questionExists = await quesData.findOne({question});
+        if(questionExists){
+            res.render(400).render('adminPanel',{'error':"Question already exists"});
+            return;
+        }
+
+        const newQues = new quesData({
+            question, 
+            difficulty, 
+            description
+        })
+
+        await newQues.save();
+        res.status(201).redirect('/submissionsDone');
+    }catch(error){
+        console.log(error);
+        res.status(500).render('adminPanel',{'error':"Internal server error"})
+    }
+})
 
 application.get('/userData', async(req, res) => {
     console.log("/called");

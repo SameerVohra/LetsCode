@@ -6,6 +6,20 @@
     <title>Document</title>
 </head>
 <body>
-    
+    <form action="/adminPanel" method="POST"> 
+        <h3>Enter the question</h3>
+        <textarea name="question" id="question" cols="30" rows="3" placeholder="Enter the question heading"></textarea>
+        <h3>Difficulty</h3>
+        <select name="difficulty" id="difficulty">
+            <option value="select">--SELECT--</option>
+            <option value="easy">EASY</option>
+            <option value="medium">MEDIUM</option>
+            <option value="hard">HARD</option>
+        </select>
+        <h3>Description</h3>
+        <textarea name="description" id="description" cols="30" rows="3" placeholder="Questions Description"></textarea> <!-- Fix the textarea name attribute -->
+        <br>
+        <button type="submit">Submit Ques</button>
+    </form>
 </body>
 </html>
