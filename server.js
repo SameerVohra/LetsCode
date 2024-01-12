@@ -71,6 +71,11 @@ application.get('/submissionsDone', (req, res)=>{
     res.render('submissionsDone');
 })
 
+application.get('/logout', (req, res)=>{
+    res.clearCookie("auth")
+    res.render('logout');
+})
+
 application.post('/register',async (req,res)=>{
     console.log(req.body);
     const {username,password,conpassword} = req.body;
@@ -156,8 +161,8 @@ application.post('/adminPanel', async(req, res)=>{
         }
 
         const newQues = new quesData({
-            question, 
-            difficulty, 
+            question,
+            difficulty,
             description
         })
 
@@ -167,6 +172,10 @@ application.post('/adminPanel', async(req, res)=>{
         console.log(error);
         res.status(500).render('adminPanel',{'error':"Internal server error"})
     }
+})
+
+application.post('/submissionDone', async(req, res)=>{
+
 })
 
 application.get('/userData', async(req, res) => {

@@ -21,5 +21,8 @@
         <br>
         <button type="submit">Submit Ques</button>
     </form>
+    <% if(((typeof error)!=="undefined") && error){ %>
+        <p style="color: red;">Error:<%= error %></p>
+    <% } %>   
 </body>
 </html>
