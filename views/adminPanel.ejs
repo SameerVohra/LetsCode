@@ -5,24 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+<style>
+    body{
+        background-color: black;
+    }
+    #container{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+    }
+    textarea{
+        text-align: center;
+        margin: 20px;
+    }
+
+    textarea:hover{
+        background-color: aliceblue;
+    }
+    #card{
+        padding: 20px;
+        background-color: whitesmoke;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        border: 1px solid white;
+        box-shadow: 0px 0px 20px 8px rgb(86, 190, 241);
+    }
+    #card:hover{
+        box-shadow: 0px 0px 20px 2px rgb(255, 255, 255);
+    }
+
+    #card select{
+        padding: 10px;
+        background-color: antiquewhite;
+        border-radius: 20px;
+        text-align: center;
+    }
+    button{
+        padding: 15px;
+        text-align: center;
+        background-color: aqua;
+        width: 100%;
+        box-shadow: 0px 2px 10px 0px black;
+    }
+
+    button:hover{
+        box-shadow: 0px 2px 20px 3px black;
+    }
+
+    
+</style>
 <body>
     <form action="/adminPanel" method="POST"> 
-        <h3>Enter the question</h3>
-        <textarea name="question" id="question" cols="30" rows="3" placeholder="Enter the question heading"></textarea>
-        <h3>Difficulty</h3>
+        <div id="container">
+            <div id="card">
+        <textarea name="name" id="name" cols="40" rows="5" placeholder="Enter the question heading"></textarea>
         <select name="difficulty" id="difficulty">
-            <option value="select">--SELECT--</option>
+            <option value="select">Select Difficulty</option>
             <option value="easy">EASY</option>
             <option value="medium">MEDIUM</option>
             <option value="hard">HARD</option>
         </select>
-        <h3>Description</h3>
-        <textarea name="description" id="description" cols="30" rows="3" placeholder="Questions Description"></textarea> <!-- Fix the textarea name attribute -->
+        <textarea name="description" id="description" cols="40" rows="5" placeholder="Questions Description"></textarea>
         <br>
         <button type="submit">Submit Ques</button>
+    </div>
+</div>
     </form>
     <% if(((typeof error)!=="undefined") && error){ %>
         <p style="color: red;">Error:<%= error %></p>
     <% } %>   
+
 </body>
 </html>

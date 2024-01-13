@@ -76,6 +76,14 @@ application.get('/logout', (req, res)=>{
     res.render('logout');
 })
 
+application.get('/quesDetails', (req, res)=>{
+    res.render('quesDetails');
+})
+
+application.get('/about', (req, res)=>{
+    res.render('about');
+})
+
 application.post('/register',async (req,res)=>{
     console.log(req.body);
     const {username,password,conpassword} = req.body;
@@ -134,7 +142,7 @@ application.post('/admin', async(req, res)=>{
         console.log(adminData.password+" "+password);
         console.log(adminData.id +" "+ Eid);
         if(username && ((password===adminData.password) && (Eid==adminData.id))){
-            // res.cookie('auth', true);
+            res.cookie('auth', true);
             res.status(201).redirect('/adminPanel');
         }
         else{
@@ -146,73 +154,48 @@ application.post('/admin', async(req, res)=>{
     }
 })
 
-application.post('/adminPanel', async(req, res)=>{
+application.post('/adminPanel', async(req, res) => {
     console.log(req.body);
-    const { question, difficulty, description } = req.body;
-    try{
-        if(!question || !difficulty || !description){
-            res.status(401).render('adminPanel',{'error':"All fields are mandatory"})
+    const { name, difficulty, description } = req.body;
+    try {
+        if (!name || !difficulty || !description) {
+            res.status(401).render('adminPanel', {'error': "All fields are mandatory"});
             return;
         }
-        const questionExists = await quesData.findOne({question});
-        if(questionExists){
-            res.render(400).render('adminPanel',{'error':"Question already exists"});
+        const questionExists = await quesData.findOne({ name });
+        if (questionExists) {
+            res.status(400).render('adminPanel', {'error': "Question already exists"});
             return;
         }
 
         const newQues = new quesData({
-            question,
+            name,
             difficulty,
             description
-        })
+        });
 
         await newQues.save();
         res.status(201).redirect('/submissionsDone');
-    }catch(error){
+    } catch (error) {
         console.log(error);
-        res.status(500).render('adminPanel',{'error':"Internal server error"})
+        res.status(500).render('adminPanel', {'error': "Internal server error"});
     }
-})
+});
 
-application.post('/submissionDone', async(req, res)=>{
-
-})
 
 application.get('/userData', async(req, res) => {
-    console.log("/called");
-    console.log(leetcode.activeDailr);
     try{
-        const { username } = req.query;
-        console.log(username);
-        const response = await axios.get(`https://leetcode-api-faisalshohag.vercel.app/${username}`);
-        const fetchData = response.data;
-
-        const totalQuestionsSubmitted = fetchData.totalSubmissions
-            .filter(submission => submission.difficulty === "All")
-            .reduce((acc, submission) => acc + submission.count, 0);
-
-        const easyQuestionsSubmitted = fetchData.totalSubmissions
-            .filter(submission => submission.difficulty==="Easy")
-            .reduce((acc, submission) => acc + submission.count, 0);
-        
-        const medQuestionsSubmitted = fetchData.totalSubmissions
-            .filter(submission => submission.difficulty==="Medium")
-            .reduce((acc, submission) => acc+submission.count, 0);
-        
-        const hardQuestionsSubmitted = fetchData.totalSubmissions
-            .filter(submission => submission.difficulty==="Hard")
-            .reduce((acc, submission) => acc+submission.count,0)
-
-        console.log(easyQuestionsSubmitted);
-        console.log(medQuestionsSubmitted);
-        console.log(hardQuestionsSubmitted);
-        console.log(totalQuestionsSubmitted);
-        res.render('userData', { fetchData,totalQuestionsSubmitted, easyQuestionsSubmitted, medQuestionsSubmitted, hardQuestionsSubmitted });
-    }catch(error){
-        console.log("Error fetching the API", error.message);
-        res.status(404).render('home');
+        const questionArray = await quesData.find({}, 'name difficulty description');
+        const question = questionArray.map(questionsData =>({
+            name: questionsData.name,
+            difficulty: questionsData.difficulty,
+            description: questionsData.description
+        }));
+        console.log(question);
+        res.status(201).render('userData', { question });
+    }catch{
+        res.status(500).send("Internal server error")
     }
-
 })
 
 application.listen(port, ()=>{
