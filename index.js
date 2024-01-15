@@ -135,7 +135,7 @@ application.post('/login',async (req,res)=>{
     }
 })
 
-application.post('/admin', isAuthenticated, async(req, res)=>{
+application.post('/admin', async(req, res)=>{
     const { username, password, Eid } = req.body;
     console.log(req.body);
     try{
