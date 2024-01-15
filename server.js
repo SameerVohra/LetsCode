@@ -4,20 +4,19 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const res = require('express/lib/response');
 const User = require('./model/userData')
-const axios = require('axios');
-const databaseUri = 'mongodb://127.0.0.1:27017/LetsCode';
 const admin = require('./model/adminData');
+require('dotenv').config();
 const quesData = require('./model/questions')
 
 async function db(){
-    await mongoose.connect(databaseUri);
+    await mongoose.connect(process.env.DB_URI);
 }
 
 db()
-    .then(res=>console.log("DB connected"))
+    .then(res=>console.log("Connection Established"))
     .catch(err=>console.log(`error ${err}`));
 
-const port = 3000;
+const port = process.env.port || 3000;
 const application = express();
 
 application.set('view engine','ejs');
@@ -39,9 +38,13 @@ const isAuthenticated = (req,res,next)=>{
     if(req.isAuthenticated){
         next();
     }else{
-        res.status(401).redirect("/login");
+        res.status(401).redirect("/");
     }
 }
+
+application.get("/", (req, res)=>{
+    res.render("home");
+})
 
 application.get("/login",(req,res)=>{
     console.log("Login page called");
@@ -105,7 +108,6 @@ application.post('/register',async (req,res)=>{
 
         if(password !== conpassword){
             res.status(401).render('register',{'error':"Password and confirm password doesn't matches"});
-            console.log("Called not matching");
             return;
         }
         
@@ -133,14 +135,11 @@ application.post('/login',async (req,res)=>{
     }
 })
 
-application.post('/admin', async(req, res)=>{
+application.post('/admin', isAuthenticated, async(req, res)=>{
     const { username, password, Eid } = req.body;
     console.log(req.body);
     try{
         const adminData = await admin.findOne({ username });
-        console.log(username);
-        console.log(adminData.password+" "+password);
-        console.log(adminData.id +" "+ Eid);
         if(username && ((password===adminData.password) && (Eid==adminData.id))){
             res.cookie('auth', true);
             res.status(201).redirect('/adminPanel');
@@ -154,7 +153,7 @@ application.post('/admin', async(req, res)=>{
     }
 })
 
-application.post('/adminPanel', async(req, res) => {
+application.post('/adminPanel', isAuthenticated, async(req, res) => {
     console.log(req.body);
     const { name, difficulty, description } = req.body;
     try {
@@ -193,8 +192,9 @@ application.get('/userData', async(req, res) => {
         }));
         console.log(question);
         res.status(201).render('userData', { question });
-    }catch{
+    }catch(error){
         res.status(500).send("Internal server error")
+        console.log(error);
     }
 })
 
